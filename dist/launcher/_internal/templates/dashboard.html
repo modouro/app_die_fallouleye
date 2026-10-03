@@ -1,0 +1,120 @@
+{% extends "bases.html" %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+<!-- Titre -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+<h2 class="fw-bold text-primary">
+<i class="bi bi-speedometer2"></i> Tableau de bord
+</h2>
+
+</div>
+
+
+<!-- Statistiques -->
+<div class="row g-4">
+
+<!-- Factures -->
+<div class="col-12 col-md-4">
+
+<div class="card shadow border-0 bg-primary text-white h-100">
+
+<div class="card-body d-flex justify-content-between align-items-center">
+
+<div>
+
+<h6 class="text-uppercase">Factures</h6>
+
+<h2 class="fw-bold">{{ factures }}</h2>
+
+</div>
+
+<i class="bi bi-receipt fs-1"></i>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Total ventes -->
+<div class="col-12 col-md-4">
+
+<div class="card shadow border-0 bg-success text-white h-100">
+
+<div class="card-body d-flex justify-content-between align-items-center">
+
+<div>
+
+<h6 class="text-uppercase">Total ventes</h6>
+
+<h2 class="fw-bold">{{ ventes|floatformat:0 }} FCFA</h2>
+
+</div>
+
+<i class="bi bi-cash-stack fs-1"></i>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Montant payé -->
+<div class="col-12 col-md-4">
+
+<div class="card shadow border-0 bg-warning text-white h-100">
+
+<div class="card-body d-flex justify-content-between align-items-center">
+
+<div>
+
+<h6 class="text-uppercase">Montant versé</h6>
+
+<h2 class="fw-bold">{{ total_paye|floatformat:0 }} FCFA</h2>
+
+</div>
+
+<i class="bi bi-wallet2 fs-1"></i>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- Section graphique futur -->
+<div class="row mt-4">
+
+<div class="col-12">
+
+<div class="card shadow-sm">
+
+<div class="card-body">
+
+<h5 class="mb-3">Statistiques des ventes</h5>
+
+<p class="text-muted">
+Graphique des ventes mensuelles (zone prête pour un graphique).
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

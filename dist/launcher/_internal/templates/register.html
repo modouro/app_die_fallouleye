@@ -1,0 +1,120 @@
+{% extends "bases.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center align-items-center vh-100">
+
+        <div class="col-md-5 col-lg-4">
+
+            <div class="card shadow-lg border-0 rounded-4">
+
+                <div class="card-body p-4">
+
+                    <!-- Titre -->
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold">Inscription</h3>
+                        <p class="text-muted">
+                            Créez votre compte utilisateur
+                        </p>
+                    </div>
+
+                    <!-- Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-danger text-center">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Formulaire -->
+                    <form method="post">
+
+                        {% csrf_token %}
+
+                        <!-- Username -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Nom d'utilisateur
+                            </label>
+
+                            <input
+                                type="text"
+                                name="username"
+                                class="form-control rounded-3"
+                                required
+                            >
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control rounded-3"
+                                required
+                            >
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Mot de passe
+                            </label>
+
+                            <input
+                                type="password"
+                                name="password1"
+                                class="form-control rounded-3"
+                                required
+                            >
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Confirmer mot de passe
+                            </label>
+
+                            <input
+                                type="password"
+                                name="password2"
+                                class="form-control rounded-3"
+                                required
+                            >
+                        </div>
+
+                        <!-- Bouton -->
+                        <div class="d-grid">
+                            <button
+                                type="submit"
+                                class="btn btn-success rounded-3"
+                            >
+                                S'inscrire
+                            </button>
+                        </div>
+
+                    </form>
+
+                    <!-- Login -->
+                    <div class="text-center mt-3">
+                        <a href="{% url 'login' %}">
+                            Déjà un compte ?
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

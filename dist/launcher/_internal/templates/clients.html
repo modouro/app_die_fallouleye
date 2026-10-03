@@ -1,0 +1,310 @@
+{% extends "bases.html" %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+
+    <!-- Titre -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+
+        <h2 class="fw-bold text-primary mb-3 mb-md-0">
+            <i class="bi bi-people"></i> Gestion des Clients
+        </h2>
+
+       <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#clientModal">
+            <i class="bi bi-person-plus"></i> Nouveau Client
+        </button>
+
+    </div>
+
+
+    <!-- Modal Bootstrap -->
+    <div class="modal fade" id="clientModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+        <div class="modal-header">
+            <h5 class="modal-title">Ajouter un Client</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <form method="post" action="{% url 'client_create' %}">
+            {% csrf_token %}
+
+            <div class="modal-body">
+            <div class="mb-3">
+                <label>Prénoms</label>
+                <input type="text" name="prenoms" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Nom</label>
+                <input type="text" name="nom" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Adresse</label>
+                <input type="text" name="adresse" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Téléphone</label>
+                <input type="text" name="telephone" class="form-control" required>
+            </div>
+            </div>
+
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-success">Enregistrer</button>
+            </div>
+
+        </form>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-12 col-md-4">
+
+            <div class="card shadow border-0 bg-primary text-white">
+                <div class="card-body text-center">
+
+                    <h6>Total Clients</h6>
+                    <h3>{{ data|length }}</h3>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-12 col-md-4">
+
+            <div class="card shadow border-0 bg-success text-white">
+                <div class="card-body text-center">
+
+                    <h6>Clients Actifs</h6>
+                    <h3>{{ data|length }}</h3>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-12 col-md-4">
+
+            <div class="card shadow border-0 bg-info text-white">
+                <div class="card-body text-center">
+
+                    <h6>Nouveaux Clients</h6>
+                    <h3>{{ data|length }}</h3>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Recherche -->
+    <div class="card shadow-sm mb-3">
+
+        <div class="card-body">
+            <form method="get" class="d-flex">
+                <input type="text"
+                    name="q"
+                    class="form-control"
+                    placeholder="🔎 Rechercher un client"
+                    value="{{ request.GET.q }}">
+
+                <button class="btn btn-primary ms-2">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+
+    <!-- Tableau Clients -->
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover table-bordered align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>Nom</th>
+                            <th>Téléphone</th>
+                            <th>Adresse</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for c in data %}
+
+                        <tr>
+
+                            <td class="fw-bold text-primary">
+                                {{ c.nom }}
+                            </td>
+
+                            <td>
+                                <i class="bi bi-telephone"></i>
+                                {{ c.telephone }}
+                            </td>
+
+                            <td>
+                                <i class="bi bi-geo-alt"></i>
+                                {{ c.adresse }}
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap justify-content-around gap-2">
+                                    <button class="btn btn-sm btn-warning"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editClient{{ c.id }}">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <!-- Modal Modifier Client -->
+                                    <div class="modal fade" id="editClient{{ c.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                    <div class="modal-content">
+
+                                    <div class="modal-header">
+                                    <h5 class="modal-title">Modifier Client</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <form method="post" action="{% url 'client_update' c.id %}">
+                                    {% csrf_token %}
+
+                                    <div class="modal-body">
+
+                                    <div class="mb-3">
+                                    <label>Code Client</label>
+                                    <input type="text" name="code" class="form-control" value="{{ c.code }}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                    <label>Prénoms</label>
+                                    <input type="text" name="prenoms" class="form-control" value="{{ c.prenoms }}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                    <label>Nom</label>
+                                    <input type="text" name="nom" class="form-control" value="{{ c.nom }}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                    <label>Adresse</label>
+                                    <input type="text" name="adresse" class="form-control" value="{{ c.adresse }}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                    <label>Téléphone</label>
+                                    <input type="text" name="telephone" class="form-control" value="{{ c.telephone }}">
+                                    </div>
+
+                                    </div>
+
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Annuler
+                                    </button>
+
+                                    <button type="submit" class="btn btn-success">
+                                    Enregistrer
+                                    </button>
+                                    </div>
+
+                                    </form>
+
+                                    </div>
+                                    </div>
+                                    </div>
+
+                                    <button class="btn btn-sm btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteClient{{ c.id }}">
+                                            <i class="bi bi-trash"></i>
+                                    </button>
+                                    <!-- Modal suppression -->
+                                    <div class="modal fade" id="deleteClient{{ c.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+
+                                        <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        Confirmer la suppression
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+
+                                        <div class="modal-body text-center">
+
+                                        <p class="mb-2">
+                                        Voulez-vous vraiment supprimer ce client ?
+                                        </p>
+
+                                        <strong class="text-danger">
+                                        {{ c.prenoms }} {{ c.nom }}
+                                        </strong>
+
+                                        </div>
+
+                                        <div class="modal-footer justify-content-between">
+
+                                        <button class="btn btn-secondary"
+                                                data-bs-dismiss="modal">
+                                        Annuler
+                                        </button>
+
+                                        <form method="post" action="{% url 'client_delete' c.id %}">
+                                        {% csrf_token %}
+
+                                        <button class="btn btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                        Supprimer
+                                        </button>
+
+                                        </form>
+
+                                        </div>
+
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

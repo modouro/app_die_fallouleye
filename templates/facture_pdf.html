@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page { size: A4; margin: 1cm; }
+        body { font-size: 12px; font-family: 'Arial', sans-serif; color: #000; line-height: 1.4; position: relative; }
+        
+        /* FILIGRANE (Watermark) */
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            color: rgba(200, 0, 0, 0.1); /* Très clair pour ne pas gêner la lecture */
+            font-weight: bold;
+            text-transform: uppercase;
+            z-index: -1;
+            white-space: nowrap;
+            border: 10px solid rgba(200, 0, 0, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+        } 
+
+        .container { width: 100%; }
+        .row-flex { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .col-6 { width: 48%; }
+        
+        .border-box { border: 1px solid #000; padding: 10px; min-height: 100px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table th, .table td { border: 1px solid #000; padding: 6px; text-align: left; }
+        .text-end { text-align: right; }
+        .text-center { text-align: center; }
+        .fw-bold { font-weight: bold; }
+
+        .signature-section { margin-top: 40px; display: flex; justify-content: flex-end; }
+        .signature-box { width: 250px; border: 1px dashed #000; height: 110px; text-align: center; padding-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- <div style="text-align:center; font-size:50px; color:#eee;"> -->
+    <div class="watermark">
+        {% if reste > 0 and total_paye > 0 %}
+            PAIEMENT PARTIEL
+        {% elif reste > 0 %}
+            EN ATTENTE
+        {% else %}
+            FACTURE PAYÉE
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <div class="row-flex" style="align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px;">
+            <div style="width: 120px;">
+                <img src="file://{{ logo_path }}" style="width: 100%;" alt="Logo">
+            </div>
+            <div class="text-end">
+                <h2 style="margin:0;">Facture {{ facture.numero|default:"IN2511-0021" }}</h2> 
+                <div>Date facturation: {{ facture.date_facturation|default:"05/11/2025" }}</div>
+                <div>Date échéance: {{ facture.date_echeance|default:"05/11/2025" }}</div> 
+                <div>Client : {{ facture.client.code|default:"CU2510-00083" }}</div> 
+            </div>
+        </div>
+
+        <div class="row-flex" style="margin-top: 20px;">
+            <div class="col-6">
+                <div class="fw-bold">Émetteur</div> 
+                <div class="border-box">
+                    <div class="fw-bold">AW KEUR RASSOUL</div> 
+                    <div>KEUR MBAYE FALL ROUTE NATIONALE 1</div> 
+                    <div>Dakar</div> 
+                    <div style="margin-top:5px;">Tél : 77 503 83 72 / 78 012 04 04</div> 
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="fw-bold">Adressé à</div> 
+                <div class="border-box">
+                    <div class="fw-bold" style="font-size: 1.1em;">
+                        {{ facture.client.prenoms }} {{ facture.client.nom }}
+                    </div> 
+                    <div>{{ facture.client.adresse }}</div>
+                    <div>{{ facture.client.telephone }}</div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table">
+            <thead style="background-color: #f9f9f9;">
+                <tr>
+                    <th>Désignation</th>
+                    <th class="text-center">TVA</th>
+                    <th class="text-end">P.U. HT</th>
+                    <th class="text-center">Qté</th>
+                    <th class="text-end">Total HT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ facture.designation }}</td> 
+                    <td class="text-center">0%</td> 
+                    <td class="text-end">{{ facture.prix_unitaire|floatformat:2 }}</td> 
+                    <td class="text-center">{{ facture.quantite }}</td> 
+                    <td class="text-end">{{ facture.total|floatformat:2 }}</td> 
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="row-flex" style="margin-top: 20px;">
+            <div class="col-6">
+                <div class="fw-bold">Versements effectués</div> 
+                <table class="table" style="font-size: 11px;">
+                    {% for p in paiements %}
+                    <tr>
+                        <td>{{ p.date|date:"d/m/Y" }}</td> 
+                        <td>{{ p.type_paiement }}</td> 
+                        <td class="text-end">{{ p.montant|floatformat:2 }}</td> 
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center">Aucun paiement</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                 {% if paiements %}
+                <div style="margin-top: 8px;">Mode de règlement : 
+                    <strong>{{ paiements.last.type_paiement }}</strong>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="col-6">
+                <table class="table" style="margin-top: 0;">
+                    <tr>
+                        <td>Total HT</td>
+                        <td class="text-end">{{ facture.total|floatformat:2 }}</td>
+                    </tr>
+                    <tr class="fw-bold">
+                        <td>Total TTC</td>
+                        <td class="text-end">{{ facture.total|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td>Acompte payé</td>
+                        <td class="text-end">{{ total_paye|floatformat:2 }}</td>
+                    </tr>
+                    <tr style="background-color: #eee; font-size: 1.1em;">
+                        <td class="fw-bold">Reste à payer</td>
+                        <td class="text-end fw-bold">{{ reste|floatformat:2 }}</td> 
+                    </tr>
+                </table>
+                <div class="text-center" style="font-size: 9px; margin-top: 5px;">Montants en Francs CFA BCEAO</div> 
+            </div>
+        </div>
+
+
+        <div class="signature-section">
+            <div class="signature-box">
+                <div class="fw-bold" style="text-decoration: underline; font-size: 10px;">Cachet et Signature</div>
+            </div>
+        </div>
+
+        <div style="position: fixed; bottom: 0; width: 100%; font-size: 9px; border-top: 1px solid #ccc; padding-top: 5px;">
+            <div class="row-flex">
+                <div>AW KEUR RASSOUL - IN2511-0021</div>
+                <div>Page 1/1</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
