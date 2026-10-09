@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+import re
 
 
 # ----------------------------
@@ -88,7 +89,7 @@ class Facture(models.Model):
     # SAVE
     # ----------------------------
 
-    def save(self, *args, **kwargs):
+"""  def save(self, *args, **kwargs):
 
         if not self.numero:
 
@@ -100,7 +101,42 @@ class Facture(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.numero
+        return self.numero """
+
+def save(self, *args, **kwargs):
+
+    if not self.numero:
+
+        annee = datetime.now().year
+        prefixe = f"FAC-{annee}-"
+
+        # Récupérer tous les numéros de l'année
+        numeros = Facture.objects.filter(
+            numero__startswith=prefixe
+        ).values_list("numero", flat=True)
+
+        dernier_numero = 0
+
+        for numero in numeros:
+            match = re.search(r"(\d+)$", numero)
+
+            if match:
+                valeur = int(match.group(1))
+
+                if valeur > dernier_numero:
+                    dernier_numero = valeur
+
+        # Générer le prochain numéro
+        prochain_numero = dernier_numero + 1
+
+        self.numero = f"{prefixe}{prochain_numero:04d}"
+
+        # Sécurité supplémentaire contre un doublon
+        while Facture.objects.filter(numero=self.numero).exists():
+            prochain_numero += 1
+            self.numero = f"{prefixe}{prochain_numero:04d}"
+
+    super().save(*args, **kwargs)
 
 
 # ----------------------------
